@@ -1,0 +1,26 @@
+# Test data — kept locally, not committed (can be regenerated)
+data/before/*.html
+data/after/*.html
+data/diffs/*.diff
+data/edit/*.html
+data/edit/*.diff
+data/boundary/*.html
+data/boundary/*.diff
+data/multi/**
+data/runs/*.json
+data/class_probe/**
+data/heading_probe/**
+
+# Keep directory structure
+!data/**/.gitkeep
+!data/multi/.gitkeep
+
+# Python (uv-managed)
+__pycache__/
+*.pyc
+.venv/
+# uv.lock is committed (per project convention)
+
+# Editor
+.DS_Store
+.vscode/
