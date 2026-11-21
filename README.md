@@ -1,10 +1,12 @@
 # Apple メモ.app HTML ラウンドトリップ調査
 
-メモ.appが提供する AppleScript の `body` / `set body` プロパティが、入力 HTML をどのように正規化するかをブラックボックステストで観測し、GUI で作成した既存メモをフォーマットを壊さずに編集するための手順を確立することを目的とした調査リポジトリ。
+Mac のメモで本文を編集したとき、段落スタイル、文字サイズ、リンク、チェックリストなどの書式がどこまで保たれるかを調べるリポジトリ。macOS 26 の AppleScript による HTML 書き戻しと、macOS 27 の App Intents に関連する操作を記録している。
 
 ## 調査手法と範囲
 
-本リポジトリのすべての観測は、Apple が公開している AppleScript および JXA を経由したブラックボックステストによる。具体的には、`osascript` からメモ.appの scripting dictionary (Script Editor → File → Open Dictionary で閲覧可能な公開面) を呼び出し、`body` / `plaintext` / `attachments` / `name` 等のプロパティに入力を与えた際の戻り値を記録している。
+従来の調査では、Apple が公開している AppleScript および JXA を経由したブラックボックステストを行った。具体的には、`osascript` からメモ.appの scripting dictionary (Script Editor → File → Open Dictionary で閲覧可能な公開面) を呼び出し、`body` / `plaintext` / `attachments` / `name` 等のプロパティに入力を与えた際の戻り値を記録している。
+
+macOS 27.2.1 では、アプリ同梱の App Intents メタデータを読み取り、Siri AI とショートカットの操作を試した。末尾追記は 3 つの文字サイズ設定で既存の段落スタイルと RTF のポイント値を保持した。部分置換はメモ内蔵の「検索と置換」で書式を保持できた。App Intents 経由の部分置換は実行できなかった。[macOS 27 の実験結果](docs/experiments/app-intents.md)
 
 範囲外として、以下の行為は行っていない。
 
@@ -34,6 +36,7 @@ docs/
 │   ├── environment.md     実行環境、バックアップ手順、ツールチェーン
 │   └── test-notes.md      T01-T23 テストメモの作成手順
 └── experiments/
+    ├── app-intents.md            macOS 27 の末尾追記、新規作成、部分置換の実験
     ├── roundtrip.md              ラウンドトリップが不動点に収束するかの検証
     ├── minimal-edit.md           BeautifulSoup によるテキスト 1 ノード置換が他要素を変更しないかの検証
     ├── boundary.md               8 種の構造変更が意図通りに反映されるかの検証
@@ -46,9 +49,9 @@ docs/
     └── parser-quirks.md          パーサの個別挙動 (`<div>` ラッパーへの `<br>` 挿入、`<abbr title>` の `<u>` 化等)
 ```
 
-読み進める順序として、まず `docs/01-facts.md` で現時点の `set_body` の挙動を把握し、次に `docs/02-recipe.md` で実用上の編集レシピの使い方を読むことを推奨する。`docs/experiments/` 以下の各実験ファイルはそれぞれの根拠データであり、概要を把握した後に必要に応じて参照すればよい。
+AppleScript の調査結果と編集手順は、[HTML 書き戻しの挙動](docs/01-facts.md) と [編集レシピ](docs/02-recipe.md) を参照。Siri AI、ショートカット、メモ内蔵の「検索と置換」の結果は、[macOS 27 の実験記録](docs/experiments/app-intents.md) にまとめている。
 
-## 要点
+## AppleScript による HTML 書き戻しの要点
 
 GUI で作成されたメモに対して `body` API 経由で編集を加えると、多くの要素が不可逆に失われる。`body` API での編集が安全な対象は、画像、PDF、添付ファイル、ハイパーリンク、ハイライト、チェックリスト、ブロック引用、タイトル、見出し、小見出し段落のいずれも含まないメモに限られる。
 
