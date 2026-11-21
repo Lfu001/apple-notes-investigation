@@ -94,6 +94,8 @@ Apple は WWDC26 の質疑で、複数のアプリにまたがるインテント
 - `AppIntents` の `callAsFunction(donate:)` では、自作のインテントを Swift プログラムから実行できた。純正メモの `ReplaceSelectionLinkAction` を同じモジュールから Swift 型として参照すると、コンパイル時に名前を解決できなかった。[callAsFunction(donate:) の仕様](https://developer.apple.com/documentation/appintents/appintent/callasfunction%28donate%3A%29-3qvbt)
 - `AppIntentsTesting` には、対象アプリのバンドル ID とインテント名を指定して、別プロセスから `run()` を呼ぶ API がある。Apple が案内する構成は、対象アプリと同じ署名チームの UI テストターゲット。純正メモを対象にした単体の Swift プログラムで発生した XPC キャンセルの詳細な原因は未確認。[App Intents Testing の設定手順](https://developer.apple.com/documentation/appintentstesting/testing-your-app-intents-code)
 
+2026 年 11 月 21 日に、ロック解除済みの Mac で再試行した。メモを前面に出し、試験用メモの `OMEGA` のみを選択して `ReplaceSelectionLinkAction` を実行したところ、同じ `RemoteInvocationCancellationError` が発生した。実行前後の HTML は同一で、読み取り専用の `NoteEntity` 検索も同じエラーになった。試験プロセスのログで XPC 接続先の切断は確認できたが、切断の理由は特定できなかった。
+
 ## 同梱メタデータにある本文関連の定義
 
 | 定義 | メタデータにある入出力 |
